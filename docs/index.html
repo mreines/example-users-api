@@ -41,6 +41,8 @@
         return queryStringFromStartOfValue !== undefined ? queryStringFromStartOfValue.split('&')[0] : null;
       }
     window.onload = function() {
+      const authToken = getQueryStringValueByName("tokenid");  // Your app gets this from some other context
+
       // Begin Swagger UI call region
       const ui = SwaggerUIBundle({
         url: "users-api.yml",
@@ -53,40 +55,17 @@
         plugins: [
           SwaggerUIBundle.plugins.DownloadUrl
         ],
-        layout: "StandaloneLayout"
+        layout: "StandaloneLayout",
+        onComplete: function() {
+          // "api-key" is the key name of the security scheme in securityDefinitions
+          ui.preauthorizeApiKey("bearerToken", authToken);
+        }
       });
-      const authToken = getQueryStringValueByName("idtoken");  // Your app gets this from some other context
-
       // End Swagger UI call region
-      ui.authActions.authorize(
-        {
-          JWT: 
-          {
-            name: "JWT", 
-            schema: {
-              type: "apiKey", 
-              in: "header", 
-              name: "Authorization", 
-              description: ""
-          }, 
-          value: "Bearer " + authToken
-          }
-        });
-        ui.getStore().dispatch({
-            type: 'authorize',
-            payload: {
-                BearerAuth: {
-                    name: 'bearerToken',
-                    schema: {
-                        type: 'http',
-                        scheme: 'bearer'
-                    },
-                    value: authToken
-                }
-            }
-        })
-      ui.authToken = authToken
       window.ui = ui;
+
+      ui.preauthorizeApiKey("bearerToken", ui.authToken);
+
     };
   </script>
   </body>

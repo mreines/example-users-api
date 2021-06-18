@@ -38,7 +38,7 @@ func (a *Authenticator) TokenSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.ParseForm()
+	_ = r.ParseForm()
 	id := r.Form["idtoken"][0]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -46,7 +46,7 @@ func (a *Authenticator) TokenSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload, err := validator.Validate(r.Context(), id, "")
+	payload, err := validator.Validate(r.Context(), id, "39198542803-8q5qfh688jb2071mk6drk2prhuiaj2lc.apps.googleusercontent.com")
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		log.Fatal(err)
@@ -83,7 +83,7 @@ func (a *Authenticator) buildJwt(w http.ResponseWriter, email string) {
 		log.Fatal(err)
 		return
 	}
-	fmt.Fprint(w, signedToken)
+	_, _ = fmt.Fprint(w, signedToken)
 }
 
 func TokenCheckMiddleware(next http.Handler) http.Handler {

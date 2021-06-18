@@ -23,10 +23,7 @@
         xhr.open('POST', '/tokensignin');
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.onload = function() {
-                $('tokenvalue').text(xhr.responseText)
-                // $('#tokenmodal').modal({})
-
-                //alert('User Token - Copy this text: ' + xhr.responseText);
+                $('tokenvalue').text(xhr.responseText);
                 window.location.href = "/docs/index.html?tokenid=" + xhr.responseText;
             };
         xhr.send('idtoken=' + id_token);
