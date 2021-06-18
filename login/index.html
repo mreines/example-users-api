@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-signin-client_id" content="39198542803-8q5qfh688jb2071mk6drk2prhuiaj2lc.apps.googleusercontent.com">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <title>Login</title>
+</head>
+<body>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      function onSignIn(googleUser) {
+        var profile = googleUser.getBasicProfile();
+        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        console.log('Name: ' + profile.getName());
+        console.log('Image URL: ' + profile.getImageUrl());
+        console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+        var id_token = googleUser.getAuthResponse().id_token;
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/tokensignin');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+                $('tokenvalue').text(xhr.responseText)
+                // $('#tokenmodal').modal({})
+
+                //alert('User Token - Copy this text: ' + xhr.responseText);
+                window.location.href = "/docs/index.html?tokenid=" + xhr.responseText;
+            };
+        xhr.send('idtoken=' + id_token);
+      }
+    </script>
+    <div class="container">
+        <div class="row gy-5">
+            <div class="col-2">
+              
+            </div>
+            <div class="col">
+              <h2>Login to User Database API</h2>
+            </div>
+            <div class="col-2">
+              
+            </div>
+          </div>    
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-2">
+              
+            </div>
+            <div class="col-4 g-signin2 mx-auto" data-onsuccess="onSignIn">
+            </div>
+            <div class="col-4">
+                <a href="#" onclick="signOut();">Sign Out</a>
+                <script>
+                  function signOut() {
+                    var auth2 = gapi.auth2.getAuthInstance();
+                    auth2.signOut().then(function () {
+                      console.log('User signed out.');
+                    });
+                  }
+                </script>
+            </div>
+            <div class="col-2">
+
+            </div>
+          </div>    
+    </div>
+    <div class="container">
+      <div class="modal fade" id="tokenmodal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p id="tokenvalue"></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</body>
+</html>

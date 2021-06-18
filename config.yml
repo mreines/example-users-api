@@ -1,0 +1,6 @@
+database:
+  dsn: root:@tcp(127.0.0.1:3306)/users?charset=utf8mb4&parseTime=True&loc=Local
+
+oauth:
+  clientId: 39198542803-8q5qfh688jb2071mk6drk2prhuiaj2lc.apps.googleusercontent.com
+  secret: wHEFl_6gxVneAevtyv7xB0Z8

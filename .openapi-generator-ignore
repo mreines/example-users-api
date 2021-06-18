@@ -22,3 +22,7 @@
 # Then explicitly reverse the ignore rule for a single file:
 #!docs/README.md
 api/api_default_service.go
+api/openapi.yaml
+go.mod
+main.go
+

@@ -14,6 +14,7 @@ import (
 	"net/http"
 
 	usersapi "github.com/mreines/go-users-api/api"
+	"github.com/mreines/go-users-api/auth"
 )
 
 func main() {
@@ -23,6 +24,10 @@ func main() {
 	DefaultApiController := usersapi.NewDefaultApiController(DefaultApiService)
 
 	router := usersapi.NewRouter(DefaultApiController)
+	a := auth.Authenticator{}
+	router.HandleFunc("/tokensignin", a.TokenSignIn)
+	router.PathPrefix("/login/").Handler(http.StripPrefix("/login/", http.FileServer(http.Dir("login"))))
+	router.PathPrefix("/docs/").Handler(http.StripPrefix("/docs/", http.FileServer(http.Dir("docs"))))
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

@@ -13,6 +13,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/mreines/go-users-api/model"
 	usersrepo "github.com/mreines/go-users-api/repository"
 )
 
@@ -45,11 +46,20 @@ func (s *DefaultApiService) UsersPost(ctx context.Context, user User) (ImplRespo
 
 	//TODO: Uncomment the next line to return response Response(201, {}) or use other options such as http.Ok ...
 	//return Response(201, nil),nil
-	created, err := usersrepo.UsersPost(user.Name)
-
-	if err != nil {
-		return Response(http.StatusInternalServerError, err), err
-	}
+	created := usersrepo.UsersPost(user.Name)
 
 	return Response(http.StatusCreated, created), nil
+}
+
+func (s *DefaultApiService) UsersIdGet(ctx context.Context, id int32) (ImplResponse, error) {
+	found := usersrepo.UserGet(uint(id))
+
+	return Response(http.StatusOK, found), nil
+}
+
+func (s *DefaultApiService) UsersIdPatch(ctx context.Context, id int32, user User) (ImplResponse, error) {
+	update := model.NewUser(user.Name)
+	usersrepo.UserPatch(uint(id), &update)
+
+	return Response(http.StatusOK, update), nil
 }

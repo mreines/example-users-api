@@ -1,25 +1,23 @@
 package db
 
 import (
-	"database/sql"
-	"time"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 
-	_ "github.com/go-sql-driver/mysql"
+	util "github.com/mreines/go-users-api/util"
 )
 
-func GetDB() *sql.DB {
-	var DB *sql.DB
+func GetDB() *gorm.DB {
+	c := util.ReadConfig()
+	var DB *gorm.DB
 	var err error
 	if DB == nil {
-		DB, err = sql.Open("mysql", "root:@/users")
+		dsn := c.DSN //"root:@tcp(127.0.0.1:3306)/users?charset=utf8mb4&parseTime=True&loc=Local"
+		DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
 		if err != nil {
 			panic(err)
 		}
-		// See "Important settings" section.
-		DB.SetConnMaxLifetime(time.Minute * 3)
-		DB.SetMaxOpenConns(10)
-		DB.SetMaxIdleConns(10)
 	}
-
 	return DB
 }

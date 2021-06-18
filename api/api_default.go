@@ -13,7 +13,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
-	//"github.com/gorilla/mux"
+
+	"github.com/gorilla/mux"
+	"github.com/mreines/go-users-api/util"
 )
 
 // A DefaultApiController binds http requests to an api service and writes the service results to the http response
@@ -36,6 +38,18 @@ func (c *DefaultApiController) Routes() Routes {
 			c.UsersGet,
 		},
 		{
+			"UsersIdGet",
+			strings.ToUpper("Get"),
+			"/v1/users/{id}",
+			c.UsersIdGet,
+		},
+		{
+			"UsersIdPatch",
+			strings.ToUpper("Patch"),
+			"/v1/users/{id}",
+			c.UsersIdPatch,
+		},
+		{
 			"UsersPost",
 			strings.ToUpper("Post"),
 			"/v1/users",
@@ -49,11 +63,56 @@ func (c *DefaultApiController) UsersGet(w http.ResponseWriter, r *http.Request) 
 	result, err := c.service.UsersGet(r.Context())
 	// If an error occurred, encode the error with the status code
 	if err != nil {
-		EncodeJSONResponse(err.Error(), &result.Code, w)
+		util.EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
 	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
+	util.EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// UsersIdGet -
+func (c *DefaultApiController) UsersIdGet(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, err := util.ParseInt32Parameter(params["id"], true)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	result, err := c.service.UsersIdGet(r.Context(), id)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		util.EncodeJSONResponse(err.Error(), &result.Code, w)
+		return
+	}
+	// If no error, encode the body and the result code
+	util.EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// UsersIdPatch - Create a new user.
+func (c *DefaultApiController) UsersIdPatch(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, err := util.ParseInt32Parameter(params["id"], true)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	user := &User{}
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	result, err := c.service.UsersIdPatch(r.Context(), id, *user)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		util.EncodeJSONResponse(err.Error(), &result.Code, w)
+		return
+	}
+	// If no error, encode the body and the result code
+	util.EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
 
@@ -67,10 +126,10 @@ func (c *DefaultApiController) UsersPost(w http.ResponseWriter, r *http.Request)
 	result, err := c.service.UsersPost(r.Context(), *user)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
-		EncodeJSONResponse(err.Error(), &result.Code, w)
+		util.EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
 	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
+	util.EncodeJSONResponse(result.Body, &result.Code, w)
 
 }

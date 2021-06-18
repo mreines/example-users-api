@@ -6,33 +6,35 @@ import (
 )
 
 // UsersGet - Returns a list of users.
+func UserGet(id uint) usermodel.User {
+	var user usermodel.User
+	user.ID = id
+	usersdb.GetDB().First(&user)
+
+	return user
+}
+
+// UsersGet - Returns a list of users.
 func UsersGet() []usermodel.User {
-	rows, err := usersdb.GetDB().Query("select * from users")
-
 	var users []usermodel.User
-	if err != nil {
-		return users
-	}
+	usersdb.GetDB().Find(&users)
 
-	for rows.Next() {
-		var name string
-		var id int64
-		err = rows.Scan(&id, &name)
-		if err != nil {
-			break
-		}
-		users = append(users, usermodel.NewUser(id, name))
-	}
 	return users
 }
 
-func UsersPost(username string) (usermodel.User, error) {
-	result, err := usersdb.GetDB().Exec("insert into users (name) values (?)", username)
-	if err == nil {
-		id, err := result.LastInsertId()
-		if err == nil {
-			return usermodel.NewUser(id, username), nil
-		}
+func UsersPost(username string) usermodel.User {
+	user := usermodel.NewUser(username)
+	usersdb.GetDB().Create(&user)
+
+	return user
+}
+
+func UserPatch(id uint, user *usermodel.User) *usermodel.User {
+	original := usermodel.NewUser("")
+	usersdb.GetDB().First(&original)
+	if original.Name != user.Name {
+		user.ID = id
+		usersdb.GetDB().Save(&user)
 	}
-	return usermodel.NewUser(0, ""), err
+	return user
 }
